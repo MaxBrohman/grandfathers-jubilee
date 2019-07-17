@@ -7,6 +7,8 @@
     "start": "webpack-dev-server --open"
   },
   "devDependencies": {
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.4.1"
@@ -14,6 +16,6 @@
   "dependencies": {
     "@tweenjs/tween.js": "^17.4.0",
     "jsartoolkit5": "0.0.4",
-    "three-full": "^17.1.0"
+    "three": "^0.104.0"
   }
 }

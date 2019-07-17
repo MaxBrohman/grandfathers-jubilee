@@ -1,12 +1,18 @@
 import App from './app';
 import { data } from './data';
 import * as TWEEN from '@tweenjs/tween.js';
+import {
+    PerspectiveCamera,
+    Scene,
+    WebGLRenderer,
+    Raycaster
+} from 'three';
 
 // creating all necessary three js instances
-const camera =  new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100, -1);
-const scene = new THREE.Scene();
-const renderer = new THREE.WebGLRenderer();
-const raycaster = new THREE.Raycaster();
+const camera =  new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+const scene = new Scene();
+const renderer = new WebGLRenderer();
+const raycaster = new Raycaster();
 
 // seting canvas full screen
 renderer.domElement.style.position = 'absolute';
@@ -17,7 +23,7 @@ renderer.setClearAlpha(0.0);
 document.body.appendChild(renderer.domElement);
 
 // changes canvas size and ratio
-const resizeHandler = () => {
+const resizeHandler = (): void => {
     const elem = renderer.domElement;
 
     const DEF_WIDTH = 640;
@@ -52,7 +58,7 @@ const app = new App(scene, camera, renderer, raycaster, data);
 app.init();
 app.render();
 
-const update = () => {
+const update = (): void => {
     TWEEN.update();
     renderer.render(scene, camera);
     requestAnimationFrame(update);

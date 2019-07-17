@@ -1,21 +1,45 @@
-import PhotoMesh from './photo-mesh';
+import PhotoMesh, { PMOptions } from './photo-mesh';
 import * as TWEEN from '@tweenjs/tween.js';
+import {
+    AmbientLight,
+    Group,
+    Mesh,
+    Scene,
+    PerspectiveCamera,
+    WebGLRenderer,
+    Raycaster,
+    Vector2,
+    Vector3,
+    Object3D
+} from 'three';
 
 export default class App{
-    constructor(scene, camera, renderer, raycaster, data){
+    public renderer: WebGLRenderer;
+    private scene: Scene;
+    private camera: PerspectiveCamera;
+    private raycaster: Raycaster;
+    private data: PMOptions[];
+    private meshes: Mesh[] = [];
+    private usedMeshes: Mesh[] = [];
+    private light: AmbientLight;
+    private wrapper: Group;
+    constructor(scene: Scene, 
+        camera: PerspectiveCamera, 
+        renderer: WebGLRenderer, 
+        raycaster: Raycaster, 
+        data: PMOptions[]){
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
         this.raycaster = raycaster;
         this.data = data;
-        this.meshes = [];
         this.mouseEventHandler = this.mouseEventHandler.bind(this);
-        this.usedMeshes = [];
-        this.light = new THREE.AmbientLight();
+        this.light = new AmbientLight();
+        this.wrapper = new Group();
     }
 
     // creates all meshes and puts them on meshes property array
-    init(){
+    init(): void{
         this.data.forEach(img => {
             const newMesh = new PhotoMesh(img).init();
             newMesh.scale.set(0, 0, 0);
@@ -23,37 +47,37 @@ export default class App{
         });
         this.scene.add(this.camera);
         this.scene.add(this.light);
+        this.scene.add(this.wrapper);
         this.camera.lookAt(this.scene.position);
         this.camera.position.z = 5;
     }
 
     // adds mesh to scene, animates and translate mesh from meshes property array to usedMeshes property array
-    render(position){
+    render(position?: Vector3): void{
         if(this.meshes.length === 0){
             this.meshes = [...this.usedMeshes];
             this.usedMeshes = [];
         }
         const mesh = this.meshes[0];
-        this.scene.add(mesh);
+        this.wrapper.add(mesh);
         if(position){
             mesh.position.copy(position);
         }
-        this.animateScale(mesh).start().onComplete(() => {
-            const showedMesh = this.meshes.shift();
-            this.usedMeshes.push(showedMesh);
-        });
+        const showedMesh = this.meshes.shift();
+        this.usedMeshes.push((showedMesh as Mesh));
+        this.animateScale(mesh).start();
     }
 
     // animates and removes mesh from scene
-    hide(mesh){
-        this.animateScale(mesh).start().onComplete(() => {
-            this.scene.remove(mesh);
+    hide(mesh: Mesh | Object3D): void{
+        this.animateScale((mesh as Mesh)).start().onComplete(() => {
+            this.wrapper.remove(mesh);
         });
     }
 
     // click logic
-    mouseEventHandler(evt){
-        const mouse = new THREE.Vector2(
+    mouseEventHandler(evt: MouseEvent): void{
+        const mouse = new Vector2(
             (evt.clientX / window.innerWidth) * 2 - 1,
             -(evt.clientY / window.innerHeight) * 2 + 1
         );
@@ -61,8 +85,12 @@ export default class App{
         this.raycaster.setFromCamera(mouse, this.camera);
 
         // if mesh cicked, hides it
-        const intersects = this.raycaster.intersectObjects(this.scene.children);
+        const intersects = this.raycaster.intersectObjects(this.wrapper.children);
         if (intersects.length > 0) {
+            const clickedMesh = intersects[0].object;
+            if(clickedMesh.scale.x < 1 || clickedMesh.scale.y < 1){
+                return;
+            }
             this.hide(intersects[0].object);
             return;
         }
@@ -74,7 +102,7 @@ export default class App{
     }
 
     // animate scale depending on current mesh scale
-    animateScale(mesh){
+    animateScale(mesh: Mesh):TWEEN.Tween{
         const DUR = 800;
         const from = { value: mesh.scale.x };
         const changeProp = () => {
