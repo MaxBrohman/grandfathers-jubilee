@@ -39,6 +39,10 @@ export default class Controller {
 			.then(video => {
 				this.onVideoResize((video as HTMLVideoElement));
 				this.onWindowResize(camera, renderer);
+				document.body.addEventListener('resize', () => {
+					this.onVideoResize((video as HTMLVideoElement));
+					this.onWindowResize(camera, renderer);
+				});
 				resolve((video as HTMLVideoElement));
 			})
 			.catch(err => {
