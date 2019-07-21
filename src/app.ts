@@ -60,7 +60,7 @@ export default class App{
                 markerRoot.matrix.copy(newMat);
                 markerRoot.visible = true;
             } else {
-                markerRoot.visible = false;
+                root.visible = false;
             }
         });
     }

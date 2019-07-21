@@ -1,6 +1,6 @@
 module.exports = {
     entry: './src/index.ts',
-    mode: 'development',
+    mode: 'production',
     devtool: 'source-map',
     devServer: {
         contentBase: './dist'
@@ -16,8 +16,5 @@ module.exports = {
     },
     resolve: {
         extensions: [".tsx", ".ts", ".js"]
-    },
-    node: {
-        fs: 'empty'
     }
 }
