@@ -1,8 +1,8 @@
 import PhotoMesh, { PMOptions } from './photo-mesh';
 import * as TWEEN from '@tweenjs/tween.js';
 import {
-    AmbientLight,
     Group,
+    Matrix4,
     Mesh,
     Scene,
     PerspectiveCamera,
@@ -12,17 +12,18 @@ import {
     Vector3,
     Object3D
 } from 'three';
+import Controller from './controller';
 
 export default class App{
     public renderer: WebGLRenderer;
+    public controller: Controller = new Controller();
     private scene: Scene;
     private camera: PerspectiveCamera;
     private raycaster: Raycaster;
     private data: PMOptions[];
     private meshes: Mesh[] = [];
     private usedMeshes: Mesh[] = [];
-    private light: AmbientLight;
-    private wrapper: Group;
+    private wrapper: Group = new Group();
     constructor(scene: Scene, 
         camera: PerspectiveCamera, 
         renderer: WebGLRenderer, 
@@ -34,26 +35,38 @@ export default class App{
         this.raycaster = raycaster;
         this.data = data;
         this.mouseEventHandler = this.mouseEventHandler.bind(this);
-        this.light = new AmbientLight();
-        this.wrapper = new Group();
     }
 
     // creates all meshes and puts them on meshes property array
-    init(): void{
+    public async init(): Promise<any> {
         this.data.forEach(img => {
             const newMesh = new PhotoMesh(img).init();
             newMesh.scale.set(0, 0, 0);
             this.meshes.push(newMesh);
         });
         this.scene.add(this.camera);
-        this.scene.add(this.light);
-        this.scene.add(this.wrapper);
         this.camera.lookAt(this.scene.position);
         this.camera.position.z = 5;
+        const videoElem = await this.controller.init(this.camera, this.renderer);
+        const root = await this.controller.setMarker('./pattern-marker.patt');
+        root.add(this.wrapper);
+        root.visible = false;
+        this.scene.add(root);
+        this.controller.ar!.addEventListener('getMarker', (evt) => {
+            const marker = evt.data.marker;
+            const markerRoot = this.controller.ar!.threePatternMarkers[marker.idPatt];
+            if(markerRoot){
+                const newMat = new Matrix4().fromArray(evt.data.matrixGL_RH);
+                markerRoot.matrix.copy(newMat);
+                markerRoot.visible = true;
+            } else {
+                markerRoot.visible = false;
+            }
+        });
     }
 
     // adds mesh to scene, animates and translate mesh from meshes property array to usedMeshes property array
-    render(position?: Vector3): void{
+    public render(position?: Vector3): void{
         if(this.meshes.length === 0){
             this.meshes = [...this.usedMeshes];
             this.usedMeshes = [];
@@ -69,14 +82,14 @@ export default class App{
     }
 
     // animates and removes mesh from scene
-    hide(mesh: Mesh | Object3D): void{
+    private hide(mesh: Mesh | Object3D): void{
         this.animateScale((mesh as Mesh)).start().onComplete(() => {
             this.wrapper.remove(mesh);
         });
     }
 
     // click logic
-    mouseEventHandler(evt: MouseEvent): void{
+    public mouseEventHandler(evt: MouseEvent): void{
         const mouse = new Vector2(
             (evt.clientX / window.innerWidth) * 2 - 1,
             -(evt.clientY / window.innerHeight) * 2 + 1
@@ -102,7 +115,7 @@ export default class App{
     }
 
     // animate scale depending on current mesh scale
-    animateScale(mesh: Mesh):TWEEN.Tween{
+    private animateScale(mesh: Mesh):TWEEN.Tween{
         const DUR = 800;
         const from = { value: mesh.scale.x };
         const changeProp = () => {

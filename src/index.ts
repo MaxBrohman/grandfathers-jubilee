@@ -11,9 +11,8 @@ import {
 // creating all necessary three js instances
 const camera =  new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
 const scene = new Scene();
-const renderer = new WebGLRenderer();
+const renderer = new WebGLRenderer({ antialias: true, alpha: true });
 const raycaster = new Raycaster();
-
 // seting canvas full screen
 renderer.domElement.style.position = 'absolute';
 document.body.style.margin = '0';
@@ -55,15 +54,19 @@ const resizeHandler = (): void => {
 };
 
 const app = new App(scene, camera, renderer, raycaster, data);
-app.init();
-app.render();
+app.init()
+.then(result => {
+    app.render();
+    const video = app.controller.video;
+    const update = (): void => {
+        TWEEN.update();
+        renderer.render(scene, camera);
+        requestAnimationFrame(update);
+        app.controller.process(video);
+    };
+    update();
+});
 
-const update = (): void => {
-    TWEEN.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(update);
-};
-update();
 
 window.addEventListener('resize', resizeHandler);
 
