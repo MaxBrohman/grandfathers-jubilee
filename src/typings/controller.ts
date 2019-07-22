@@ -1,8 +1,8 @@
 import { Group } from 'three';
 
 interface IVideoInt {
-	width: number;
-	height: number;
+	width: {ideal: number};
+	height: {ideal: number};
 	facingMode: string;
 }
 
@@ -30,6 +30,7 @@ export interface IARController {
     trackPatternMarkerId: (id: number, markerWidth?: number) => Group;
     addEventListener: (event: string, callback: (evt: any) => void) => void;
     process: (video: HTMLVideoElement) => void;
+    canvas: HTMLCanvasElement;
 }
 
 export interface IARCameraParams {
