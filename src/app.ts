@@ -50,6 +50,7 @@ export default class App{
         const videoElem = await this.controller.init(this.camera, this.renderer);
         const root = await this.controller.setMarker('./pattern-marker.patt');
         root.add(this.wrapper);
+        root.rotateX(Math.PI / 2);
         root.visible = false;
         this.scene.add(root);
         this.controller.ar!.addEventListener('getMarker', (evt) => {
@@ -58,6 +59,7 @@ export default class App{
             if(markerRoot){
                 const newMat = new Matrix4().fromArray(evt.data.matrixGL_RH);
                 markerRoot.matrix.copy(newMat);
+                markerRoot.rotateX(Math.PI / 2);
                 markerRoot.visible = true;
             } else {
                 root.visible = false;

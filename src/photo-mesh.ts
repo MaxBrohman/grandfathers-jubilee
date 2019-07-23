@@ -34,7 +34,9 @@ export default class PhotoMesh{
             this.size.height * this.scale
         );
         const material = new MeshBasicMaterial({
-            map: this.texture
+            map: this.texture,
+            depthWrite: false,
+            alphaTest: 0.5
         });
         return new Mesh(geometry, material);
     }
