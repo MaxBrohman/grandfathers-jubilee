@@ -123,8 +123,10 @@ export default class App{
         this.controller.onVideoResize();
         if(window.innerHeight > window.innerWidth){
             this.wrapper.rotation.x = -(Math.PI * 0.25);
+            this.wrapper.scale.set(1, 1, 1);
         } else{
             this.wrapper.rotation.x = 0;
+            this.wrapper.scale.set(1.3, 1.3, 1.3);
         }
         this.controller.onWindowResize(this.camera, this.renderer);
     }
@@ -138,5 +140,4 @@ export default class App{
         };
         return new TWEEN.Tween(from).to({ value: Math.abs(mesh.scale.x - 1)  }, DUR).onUpdate(changeProp);
     }
-
 };

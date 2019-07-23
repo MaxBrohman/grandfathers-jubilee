@@ -37,7 +37,7 @@ export const data = [
             width: 9.60,
             height: 7.20
         },
-        scale: 1
+        scale: 0.7
     },
     {
         img: './images/2.jpg',
@@ -53,7 +53,7 @@ export const data = [
             width: 7.20,
             height: 10.71
         },
-        scale: 1
+        scale: 0.7
     },
     {
         img: './images/4.jpg',
@@ -141,6 +141,6 @@ export const data = [
             width: 16,
             height: 7.77
         },
-        scale: 1 
+        scale: 0.8 
     }
 ];
