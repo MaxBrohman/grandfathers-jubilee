@@ -77,7 +77,7 @@ export const data = [
             width: 5.27,
             height: 7.67
         },
-        scale: 1
+        scale: 0.7
     },
     {
         img: './images/7.jpg',
