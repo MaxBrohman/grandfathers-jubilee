@@ -47,9 +47,12 @@ export default class App{
         this.scene.add(this.camera);
         this.camera.lookAt(this.scene.position);
         this.camera.position.z = 5;
-        const videoElem = await this.controller.init(this.camera, this.renderer);
+        const videoElem = await this.controller.init(this.camera);
         const root = await this.controller.setMarker('./pattern-marker.patt');
-        this.wrapper.rotation.x = -(Math.PI * 0.25);
+        this.onResize();
+        window.addEventListener('resize', () => {
+            this.onResize();
+        });
         root.add(this.wrapper);
         root.visible = false;
         this.scene.add(root);
@@ -60,6 +63,7 @@ export default class App{
                 const newMat = new Matrix4().fromArray(evt.data.matrixGL_RH);
                 markerRoot.matrix.copy(newMat);
                 markerRoot.visible = true;
+                
             } else {
                 root.visible = false;
             }
@@ -113,6 +117,16 @@ export default class App{
         const distance = - this.camera.position.z / this.raycaster.ray.direction.z;
         const newPosition = this.camera.position.clone().add(this.raycaster.ray.direction.multiplyScalar(distance));
         this.render(newPosition);
+    }
+
+    private onResize(): void {
+        this.controller.onVideoResize();
+        if(window.innerHeight > window.innerWidth){
+            this.wrapper.rotation.x = -(Math.PI * 0.25);
+        } else{
+            this.wrapper.rotation.x = 0;
+        }
+        this.controller.onWindowResize(this.camera, this.renderer);
     }
 
     // animate scale depending on current mesh scale

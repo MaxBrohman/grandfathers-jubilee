@@ -31,7 +31,7 @@ export default class Controller {
 		this.playVideo = this.playVideo.bind(this);
 	}
 	
-	public init(camera: PerspectiveCamera, renderer: WebGLRenderer): Promise<HTMLVideoElement>{
+	public init(camera: PerspectiveCamera): Promise<HTMLVideoElement>{
 		return new Promise((resolve) => {
 			this.cameraParams.onload = () => {
 				this.ar = new ARController(this.width, this.height, this.cameraParams);
@@ -41,10 +41,6 @@ export default class Controller {
 			this.cameraParams.load(this.cameraUrl);
 			this.initVideoSource()
 			.then(video => {
-				this.onResize(camera, renderer);
-				window.addEventListener('resize', () => {
-					this.onResize(camera, renderer);
-				});
 				resolve((video as HTMLVideoElement));
 			})
 			.catch(err => {
@@ -66,11 +62,45 @@ export default class Controller {
 		return this.ar!.process(video);
 	}
 
-	public onResize(camera: PerspectiveCamera, renderer: WebGLRenderer): void{
-		this.onVideoResize();
-		// this.copyElementSizeTo(renderer.domElement);
-		// this.copyElementSizeTo(this.ar!.canvas);
-		this.onWindowResize(camera, renderer);
+	public onWindowResize(camera: PerspectiveCamera, renderer: WebGLRenderer): void{
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+	}
+	
+	public onVideoResize(): void{
+		const screenWidth = window.innerWidth;
+		const screenHeight = window.innerHeight;
+	
+		// compute sourceWidth, sourceHeight
+		const sourceWidth = this.video.videoWidth;
+		const sourceHeight = this.video.videoHeight;
+		
+		// compute sourceAspect
+		const sourceAspect = sourceWidth / sourceHeight;
+		// compute screenAspect
+		const screenAspect = screenWidth / screenHeight;
+	
+		// if screenAspect < sourceAspect, then change the width, else change the height
+		if( screenAspect < sourceAspect ){
+			// compute newWidth and set .width/.marginLeft
+			const newWidth = sourceAspect * screenHeight;
+			this.video.style.width = newWidth +'px';
+			this.video.style.marginLeft = -(newWidth-screenWidth)/2 + 'px';
+			
+			// init style.height/.marginTop to normal value
+			this.video.style.height = screenHeight + 'px';
+			this.video.style.marginTop = '0px';
+		}else{
+			// compute newHeight and set .height/.marginTop
+			const newHeight = 1 / (sourceAspect / screenWidth);
+			this.video.style.height = newHeight + 'px';
+			this.video.style.marginTop = -(newHeight-screenHeight)/2 + 'px';
+			
+			// init style.width/.marginLeft to normal value
+			this.video.style.width = screenWidth + 'px';
+			this.video.style.marginLeft = '0px';
+		}
 	}
 
     private getStream(): Promise<MediaStream>{
@@ -115,65 +145,6 @@ export default class Controller {
 		this.video.style.height = '480px';
 	}
 
-	private onWindowResize(camera: PerspectiveCamera, renderer: WebGLRenderer): void{
-		camera.aspect = window.innerWidth / window.innerHeight;
-		camera.updateProjectionMatrix();
-		renderer.setSize(window.innerWidth, window.innerHeight);
-	}
-	
-	private onVideoResize(): void{
-		const screenWidth = window.innerWidth;
-		const screenHeight = window.innerHeight;
-	
-		// compute sourceWidth, sourceHeight
-		const sourceWidth = this.video.videoWidth;
-		const sourceHeight = this.video.videoHeight;
-		
-		// compute sourceAspect
-		const sourceAspect = sourceWidth / sourceHeight;
-		// compute screenAspect
-		const screenAspect = screenWidth / screenHeight;
-	
-		// if screenAspect < sourceAspect, then change the width, else change the height
-		if( screenAspect < sourceAspect ){
-			// compute newWidth and set .width/.marginLeft
-			const newWidth = sourceAspect * screenHeight;
-			this.video.style.width = newWidth +'px';
-			this.video.style.marginLeft = -(newWidth-screenWidth)/2 + 'px';
-			
-			// init style.height/.marginTop to normal value
-			this.video.style.height = screenHeight + 'px';
-			this.video.style.marginTop = '0px';
-		}else{
-			// compute newHeight and set .height/.marginTop
-			const newHeight = 1 / (sourceAspect / screenWidth);
-			this.video.style.height = newHeight + 'px';
-			this.video.style.marginTop = -(newHeight-screenHeight)/2 + 'px';
-			
-			// init style.width/.marginLeft to normal value
-			this.video.style.width = screenWidth + 'px';
-			this.video.style.marginLeft = '0px';
-		}
-	}
-
-	// private copyElementSizeTo(elem: HTMLElement): void{
-	// 	if (window.innerWidth > window.innerHeight) {
-	// 		// landscape
-	// 		elem.style.width = this.video.style.width;
-	// 		elem.style.height = this.video.style.height;
-	// 		elem.style.marginLeft = this.video.style.marginLeft;
-	// 		elem.style.marginTop = this.video.style.marginTop;
-	// 	} else {
-	// 		// portrait
-	// 		elem.style.height = this.video.style.height;
-	// 		elem.style.width =
-	// 			(parseInt(elem.style.height!, 10) * 4) / 3 + "px";
-	// 		elem.style.marginLeft =
-	// 			(window.innerWidth - parseInt(elem.style.width, 10)) / 2 + "px";
-	// 		elem.style.marginTop = '0';
-	// 	}
-	// }
-
 	private createMarkerRoot(markerUid: number): Group{
 		const root = new Group();
 		this.ar!.threePatternMarkers = {};
@@ -183,5 +154,4 @@ export default class Controller {
 		this.ar!.threePatternMarkers[markerUid] = root;
 		return root;
 	}
-
 }
