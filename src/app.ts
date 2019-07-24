@@ -1,5 +1,4 @@
 import PhotoMesh, { PMOptions } from './photo-mesh';
-import * as TWEEN from '@tweenjs/tween.js';
 import {
     Group,
     Matrix4,
@@ -10,9 +9,11 @@ import {
     Raycaster,
     Vector2,
     Vector3,
-    Object3D
+    Object3D,
+    Clock
 } from 'three';
 import Controller from './controller';
+import { Fireworks } from './fireworks';
 
 export default class App{
     public renderer: WebGLRenderer;
@@ -21,6 +22,8 @@ export default class App{
     private camera: PerspectiveCamera;
     private raycaster: Raycaster;
     private data: PMOptions[];
+    private fireworks: Fireworks | undefined;
+    private actions: Array<() => void> = [];
     private meshes: Mesh[] = [];
     private usedMeshes: Mesh[] = [];
     private wrapper: Group = new Group();
@@ -35,6 +38,8 @@ export default class App{
         this.raycaster = raycaster;
         this.data = data;
         this.mouseEventHandler = this.mouseEventHandler.bind(this);
+
+        this.act = this.act.bind(this);
     }
 
     // creates all meshes and puts them on meshes property array
@@ -63,15 +68,21 @@ export default class App{
                 const newMat = new Matrix4().fromArray(evt.data.matrixGL_RH);
                 markerRoot.matrix.copy(newMat);
                 markerRoot.visible = true;
-                
             } else {
                 root.visible = false;
             }
         });
+        this.actions.push(this.controller.process);
     }
 
     // adds mesh to scene, animates and translate mesh from meshes property array to usedMeshes property array
     public render(position?: Vector3): void{
+        if(this.meshes.length === 1){
+            if(!this.fireworks){
+                this.fireworks = new Fireworks(this.scene);
+                this.actions.push(this.fireworks.draw);
+            }
+        }
         if(this.meshes.length === 0){
             this.meshes = [...this.usedMeshes];
             this.usedMeshes = [];
@@ -83,13 +94,12 @@ export default class App{
         }
         const showedMesh = this.meshes.shift();
         this.usedMeshes.push((showedMesh as Mesh));
-        this.animateScale(mesh).start();
+        this.animateScale(mesh);
     }
 
-    // animates and removes mesh from scene
-    private hide(mesh: Mesh | Object3D): void{
-        this.animateScale((mesh as Mesh)).start().onComplete(() => {
-            this.wrapper.remove(mesh);
+    public act(): void{
+        this.actions.forEach(action => {
+            action();
         });
     }
 
@@ -119,6 +129,14 @@ export default class App{
         this.render(newPosition);
     }
 
+    
+    // animates and removes mesh from scene
+    private hide(mesh: Mesh | Object3D): void{
+        this.animateScale((mesh as Mesh)).then(() => {
+            this.wrapper.remove(mesh);
+        }); 
+    }
+
     private onResize(): void {
         this.controller.onVideoResize();
         if(window.innerHeight > window.innerWidth){
@@ -132,12 +150,33 @@ export default class App{
     }
 
     // animate scale depending on current mesh scale
-    private animateScale(mesh: Mesh):TWEEN.Tween{
-        const DUR = 800;
-        const from = { value: mesh.scale.x };
-        const changeProp = () => {
-            mesh.scale.set(from.value, from.value, from.value);
-        };
-        return new TWEEN.Tween(from).to({ value: Math.abs(mesh.scale.x - 1)  }, DUR).onUpdate(changeProp);
+    private animateScale(mesh: Mesh): Promise<boolean>{
+        return new Promise((resolve) => {
+
+            let clock: Clock | null = new Clock();
+            const duration = 0.8;
+            const to = mesh.scale.x - 1;
+            const from = -mesh.scale.x;
+
+            const animate = () => {
+                const animationTime = clock!.getElapsedTime();
+                const step = animationTime / duration;
+
+                if(animationTime >= duration){
+                    resolve(true);
+                    clock = null;
+                    const limit = Math.abs(to);
+                    mesh.scale.set(limit, limit, 0);
+                    return;
+                }
+                
+                const value = Math.abs(from + step);
+                mesh.scale.set(value, value, 0);
+
+                requestAnimationFrame(animate);
+            };
+            animate();
+        });
+        
     }
 };

@@ -1,49 +1,9 @@
 export const data = [
     {
-        img: './images/Яша и Миша.PNG',
-        size: {
-            width: 4.22,
-            height: 3.57
-        },
-        scale: 1
-    },
-    {
-        img: './images/Яша, Миша, родители.PNG',
-        size: {
-            width: 3.72,
-            height: 2.84 
-        },
-        scale: 1
-    },
-    {
         img: './images/Отец молодой.PNG',
         size: {
             width: 4.28,
             height: 3.28
-        },
-        scale: 1
-    },
-    {
-        img: './images/Отец молодой_семья.PNG',
-        size: {
-            width: 4.49,
-            height: 3.65
-        },
-        scale: 1
-    },
-    {
-        img: './images/1.jpg',
-        size: {
-            width: 9.60,
-            height: 7.20
-        },
-        scale: 0.7
-    },
-    {
-        img: './images/2.jpg',
-        size: {
-            width: 4.67,
-            height: 6.27
         },
         scale: 1
     },
@@ -72,30 +32,6 @@ export const data = [
         scale: 1
     },
     {
-        img: './images/6.jpg',
-        size: {
-            width: 5.27,
-            height: 7.67
-        },
-        scale: 0.7
-    },
-    {
-        img: './images/7.jpg',
-        size: {
-            width: 9.55,
-            height: 6.25
-        },
-        scale: 1  
-    },
-    {
-        img: './images/8.jpg',
-        size: {
-            width: 9.46,
-            height: 6.27
-        },
-        scale: 1   
-    },
-    {
         img: './images/9.jpg',
         size: {
             width: 8.35,
@@ -112,14 +48,6 @@ export const data = [
         scale: 1 
     },
     {
-        img: './images/2 августа 2009  Семейное.jpg',
-        size: {
-            width: 5.32,
-            height: 6
-        },
-        scale: 1
-    },
-    {
         img: './images/11.jpg',
         size: {
             width: 4.79,
@@ -134,13 +62,5 @@ export const data = [
             height: 5.45
         },
         scale: 1  
-    },
-    {
-        img: './images/13.jpg',
-        size: {
-            width: 16,
-            height: 7.77
-        },
-        scale: 0.8 
     }
 ];

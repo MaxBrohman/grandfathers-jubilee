@@ -58,8 +58,8 @@ export default class Controller {
 		});
 	  }
 
-	public process(video: HTMLVideoElement): void{
-		return this.ar!.process(video);
+	public process(): void{
+		return this.ar!.process(this.video);
 	}
 
 	public onWindowResize(camera: PerspectiveCamera, renderer: WebGLRenderer): void{

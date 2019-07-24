@@ -1,6 +1,5 @@
 import App from './app';
 import { data } from './data';
-import * as TWEEN from '@tweenjs/tween.js';
 import {
     PerspectiveCamera,
     Scene,
@@ -9,7 +8,7 @@ import {
 } from 'three';
 
 // creating all necessary three js instances
-const camera =  new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+const camera =  new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20000);
 const scene = new Scene();
 const renderer = new WebGLRenderer({ antialias: true, alpha: true });
 const raycaster = new Raycaster();
@@ -24,10 +23,9 @@ app.init()
     app.render();
     const video = app.controller.video;
     const update = (): void => {
-        TWEEN.update();
+        app.act();
         renderer.render(scene, camera);
         requestAnimationFrame(update);
-        app.controller.process(video);
     };
     update();
 });
