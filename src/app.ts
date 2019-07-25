@@ -46,7 +46,7 @@ export default class App{
     public async init(): Promise<any> {
         this.data.forEach(img => {
             const newMesh = new PhotoMesh(img).init();
-            newMesh.scale.set(0, 0, 0);
+            newMesh.scale.set(0.000001, 0.000001, 0.000001);
             this.meshes.push(newMesh);
         });
         this.scene.add(this.camera);
@@ -115,8 +115,10 @@ export default class App{
         // if mesh cicked, hides it
         const intersects = this.raycaster.intersectObjects(this.wrapper.children);
         if (intersects.length > 0) {
+            const maxScaleAfterAnimation = 0.999999;
             const clickedMesh = intersects[0].object;
-            if(clickedMesh.scale.x < 1 || clickedMesh.scale.y < 1){
+            if(clickedMesh.scale.x < maxScaleAfterAnimation || clickedMesh.scale.y < maxScaleAfterAnimation){
+                console.log('here', clickedMesh.scale.x);
                 return;
             }
             this.hide(intersects[0].object);
@@ -166,12 +168,12 @@ export default class App{
                     resolve(true);
                     clock = null;
                     const limit = Math.abs(to);
-                    mesh.scale.set(limit, limit, 0);
+                    mesh.scale.set(limit, limit, 0.000001);
                     return;
                 }
                 
                 const value = Math.abs(from + step);
-                mesh.scale.set(value, value, 0);
+                mesh.scale.set(value, value, 0.000001);
 
                 requestAnimationFrame(animate);
             };
