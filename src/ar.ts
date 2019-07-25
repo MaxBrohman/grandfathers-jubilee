@@ -1,17 +1,18 @@
-import { Group, PerspectiveCamera, WebGLRenderer } from 'three';
 import { IVideoParams, IARController, IARCameraParams } from './typings/controller';
 
+// new version of ARtoolkit doesnt exist as npm package fo now 
 declare const ARController: IARController;
 declare const ARCameraParam: IARCameraParams;
 
-export default class Controller {
+export default class Ar {
 	public video: HTMLVideoElement;
-	public ar: IARController | undefined;
+	public controller: IARController | undefined;
 	private width: number = 640;
 	private height: number = 480;
 	private videoParams: IVideoParams;
 	private cameraParams: IARCameraParams;
 	private readonly cameraUrl: string = './camera_para.dat';
+	private readonly patternUrl: string = './pattern-marker.patt';
     constructor(){
 		this.video = document.createElement('video');
 		this.cameraParams = new ARCameraParam();
@@ -31,43 +32,54 @@ export default class Controller {
 		this.playVideo = this.playVideo.bind(this);
 	}
 	
-	public init(camera: PerspectiveCamera): Promise<HTMLVideoElement>{
+	// initialiizes video stream and calibrates camera
+	public initCamera(): Promise<HTMLVideoElement>{
 		return new Promise((resolve) => {
 			this.cameraParams.onload = () => {
-				this.ar = new ARController(this.width, this.height, this.cameraParams);
-				const cameraMatrix = this.ar.getCameraMatrix();
-				camera.projectionMatrix.fromArray((cameraMatrix as number[]));
+				this.controller = new ARController(this.width, this.height, this.cameraParams);
+				this.initVideoSource()
+				.then((video) => {
+					resolve((video as HTMLVideoElement));
+				})
+				.catch(err => {
+					console.error('error occured', err.message);
+				});
 			};
 			this.cameraParams.load(this.cameraUrl);
-			this.initVideoSource()
-			.then(video => {
-				resolve((video as HTMLVideoElement));
-			})
-			.catch(err => {
-				console.warn('error occured', err.message);
-			});
 		});
 	}
 
-	public setMarker(url: string): Promise<Group>{
+	// basically decorator around setMarker method
+	public initMarker(root: THREE.Group): Promise<THREE.Group>{
+		return new Promise( async (resolve) => {
+			const newRoot = await this.setMarker(this.patternUrl, root);
+			resolve(newRoot);
+		});
+	}
+
+	// loads marker pattern and creates scene root element
+	public setMarker(url: string, root: THREE.Group): Promise<THREE.Group>{
 		return new Promise((resolve) => {
-		  	(this.ar as IARController).loadMarker(url, (markerUid: any) => {
-				const markerRoot = this.createMarkerRoot(markerUid);
+		  	(this.controller as IARController).loadMarker(url, (markerUid: any) => {
+				const markerRoot = this.createMarkerRoot(markerUid, root);
 				resolve(markerRoot);
 			});
 		});
 	  }
 
+	// artoolkit frame processing
 	public process(): void{
-		return this.ar!.process(this.video);
+		return this.controller!.process(this.video);
 	}
 
-	public onWindowResize(camera: PerspectiveCamera, renderer: WebGLRenderer): void{
+	// updates three js scene on resize
+	public onWindowResize(camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer): void{
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 	
+	// updates page on resize
 	public onVideoResize(): void{
 		const screenWidth = window.innerWidth;
 		const screenHeight = window.innerHeight;
@@ -103,10 +115,12 @@ export default class Controller {
 		}
 	}
 
+	// gets stream from user camera
     private getStream(): Promise<MediaStream>{
         return navigator.mediaDevices.getUserMedia(this.videoParams);
     }
 
+	// writes stream into video html element
     private initVideoSource(): Promise<HTMLVideoElement | void>{
 		return new Promise((resolve) => {
 			this.getStream()
@@ -123,11 +137,13 @@ export default class Controller {
 		});
     }
 
+	// helper function for some browsers
     private playVideo(): void{
         this.video.play();
         document.body.removeEventListener('click', this.playVideo);
 	}
 	
+	// sets video styles
 	private setVideoStyles(): void{
 		this.video.style.position = 'absolute';
 		this.video.style.top = '0px';
@@ -145,13 +161,13 @@ export default class Controller {
 		this.video.style.height = '480px';
 	}
 
-	private createMarkerRoot(markerUid: number): Group{
-		const root = new Group();
-		this.ar!.threePatternMarkers = {};
-		(root as any).markerTracker = this.ar!.trackPatternMarkerId(markerUid);
+	// sets necessary properties for scene root element
+	private createMarkerRoot(markerUid: number, root: THREE.Group): THREE.Group{
+		this.controller!.threePatternMarkers = {};
+		(root as any).markerTracker = this.controller!.trackPatternMarkerId(markerUid);
 		(root as any).markerMatrix = new Float64Array(12);
 		root.matrixAutoUpdate = false;
-		this.ar!.threePatternMarkers[markerUid] = root;
+		this.controller!.threePatternMarkers[markerUid] = root;
 		return root;
 	}
 }

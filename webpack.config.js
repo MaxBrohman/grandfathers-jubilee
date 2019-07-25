@@ -1,6 +1,6 @@
 module.exports = {
     entry: './src/index.ts',
-    mode: 'production',
+    mode: 'development',
     devtool: 'source-map',
     devServer: {
         contentBase: './dist'
@@ -14,7 +14,12 @@ module.exports = {
             }
         ]
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    },
     resolve: {
-        extensions: [".tsx", ".ts", ".js"]
+        extensions: [".ts", ".js"]
     }
 }

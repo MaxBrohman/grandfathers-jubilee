@@ -9,7 +9,7 @@ import {
     VertexColors
 } from 'three';
 
-export class Fireworks{
+export default class Fireworks{
     private fireworks: Firework[] = [];
     private scene: Scene;
     constructor(scene: Scene){

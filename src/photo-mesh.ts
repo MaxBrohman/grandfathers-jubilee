@@ -5,17 +5,7 @@ import {
     TextureLoader,
     PlaneGeometry
 } from 'three';
-
-interface OptionsSize {
-    width: number;
-    height: number;
-}
-
-export interface PMOptions {
-    size: OptionsSize;
-    scale: number;
-    img: string;
-}
+import { PMOptions, OptionsSize } from './typings/photo-mesh';
 
 // image plane class
 export default class PhotoMesh{
