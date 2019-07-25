@@ -153,6 +153,7 @@ export default class App {
         // if mesh cicked, hides it
         const intersects = this.raycaster!.intersectObjects(this.wrapper!.children);
         if (intersects.length > 0) {
+            const maxScaleAfterAnimation = 0.999999;
             const clickedMesh = intersects[0].object;
             const maxScaleAfterAnimation = 0.999999;
             if(clickedMesh.scale.x < maxScaleAfterAnimation || clickedMesh.scale.y < maxScaleAfterAnimation){
