@@ -1,43 +1,27 @@
-import {
-    Mesh,
-    MeshBasicMaterial,
-    Texture,
-    TextureLoader,
-    PlaneGeometry
-} from 'three';
-
-interface OptionsSize {
-    width: number;
-    height: number;
-}
-
-export interface PMOptions {
-    size: OptionsSize;
-    scale: number;
-    img: string;
-}
+import { PMOptions, OptionsSize } from './typings/photo-mesh';
+declare const THREE: any;
 
 // image plane class
 export default class PhotoMesh{
-    private texture: Texture;
+    private texture: THREE.Texture;
     private size: OptionsSize;
     private scale: number;
     constructor(options: PMOptions){
-        this.texture = new TextureLoader().load(options.img);
+        this.texture = new THREE.TextureLoader().load(options.img);
         this.size = options.size;
         this.scale = options.scale;
     }
     // sets image as texture
-    init(): Mesh{
-        const geometry = new PlaneGeometry(
+    init(): THREE.Mesh{
+        const geometry = new THREE.PlaneGeometry(
             this.size.width * this.scale,
             this.size.height * this.scale
         );
-        const material = new MeshBasicMaterial({
+        const material = new THREE.MeshBasicMaterial({
             map: this.texture,
             depthWrite: false,
             alphaTest: 0.5
         });
-        return new Mesh(geometry, material);
+        return new THREE.Mesh(geometry, material);
     }
 };
