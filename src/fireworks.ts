@@ -1,15 +1,24 @@
-declare const THREE: any;
+import {
+    Scene, 
+    PointsMaterial, 
+    Math, 
+    Vector3, 
+    Color, 
+    Geometry, 
+    Points, 
+    VertexColors
+} from 'three';
 
 export default class Fireworks{
     private fireworks: Firework[] = [];
-    private scene: THREE.Scene;
-    constructor(scene: THREE.Scene){
+    private scene: Scene;
+    constructor(scene: Scene){
         this.scene = scene;
         this.draw = this.draw.bind(this);
     }
 
     public draw(): void{
-        if(THREE.Math.randInt(1,20) === 10){
+        if(Math.randInt(1,20) === 10){
             this.fireworks.push(new Firework(this.scene));
         }
         for(let i = 0; i < this.fireworks.length; i++){
@@ -26,21 +35,21 @@ class Firework {
     public done: boolean = false;
     private dest: any[] = [];
     private colors: any [] = [];
-    private material: THREE.PointsMaterial;
-    private scene: THREE.Scene;
-    private geometry: THREE.Geometry = new THREE.Geometry();
-    private points: THREE.Points;
-    constructor(scene: THREE.Scene){
-        this.material = new THREE.PointsMaterial({
+    private material: PointsMaterial;
+    private scene: Scene;
+    private geometry: Geometry = new Geometry();
+    private points: Points;
+    constructor(scene: Scene){
+        this.material = new PointsMaterial({
             size: 16,
             color: 0xffffff,
             opacity: 1,
             transparent: true,
             depthTest: false,
-            vertexColors: THREE.VertexColors
+            vertexColors: VertexColors
         });
         this.scene = scene;
-        this.points = new THREE.Points(this.geometry, this.material);
+        this.points = new Points(this.geometry, this.material);
         this.launch();
     }
 
@@ -64,7 +73,7 @@ class Firework {
             // watch first particle for explosion 
             if(total === 1){
                 const firstVert = this.geometry.vertices[0];
-                if(THREE.Math.ceilPowerOfTwo(firstVert.y) > (this.dest[0].y - 20)){
+                if(Math.ceilPowerOfTwo(firstVert.y) > (this.dest[0].y - 20)){
                     this.explode(firstVert);
                     return;
                 }
@@ -87,15 +96,15 @@ class Firework {
 
     private launch(): void{
         const width = window.innerWidth;
-        const x = THREE.Math.randInt(-width, width);
-        const y = THREE.Math.randInt(100, 800);
-        const z = THREE.Math.randInt(-1000, -3000);
+        const x = Math.randInt(-width, width);
+        const y = Math.randInt(100, 800);
+        const z = Math.randInt(-1000, -3000);
 
-        const from = new THREE.Vector3(x, -800, z);
-        const to = new THREE.Vector3(x, y, z);
+        const from = new Vector3(x, -800, z);
+        const to = new Vector3(x, y, z);
 
-        const color = new THREE.Color();
-        color.setHSL(THREE.Math.randFloat(0.1, 0.9), 1, 0.9);
+        const color = new Color();
+        color.setHSL(Math.randFloat(0.1, 0.9), 1, 0.9);
         this.colors.push(color);
         this.geometry.colors = this.colors;
         this.geometry.vertices.push(from);
@@ -104,25 +113,25 @@ class Firework {
         this.scene.add(this.points);
     }
 
-    private explode(vector: THREE.Vector3): void{
+    private explode(vector: Vector3): void{
         this.scene.remove(this.points);
         this.dest = [];
         this.colors = [];
-        this.geometry = new THREE.Geometry();
-        this.points = new THREE.Points(this.geometry, this.material);
+        this.geometry = new Geometry();
+        this.points = new Points(this.geometry, this.material);
         for(let i = 0; i < 80; i++){
-            const color = new THREE.Color();
-            color.setHSL(THREE.Math.randFloat(0.1, 0.9), 1, 0.5);
+            const color = new Color();
+            color.setHSL(Math.randFloat(0.1, 0.9), 1, 0.5);
             this.colors.push(color);
-            const from = new THREE.Vector3(
-                THREE.Math.randInt(vector.x - 10, vector.x + 10),
-                THREE.Math.randInt(vector.y - 10, vector.y + 10),
-                THREE.Math.randInt(vector.z - 10, vector.z + 10)
+            const from = new Vector3(
+                Math.randInt(vector.x - 10, vector.x + 10),
+                Math.randInt(vector.y - 10, vector.y + 10),
+                Math.randInt(vector.z - 10, vector.z + 10)
             );
-            const to = new THREE.Vector3(
-                THREE.Math.randInt(vector.x - 1000, vector.x + 1000),
-                THREE.Math.randInt(vector.y - 1000, vector.y + 1000),
-                THREE.Math.randInt(vector.z - 1000, vector.z + 1000)
+            const to = new Vector3(
+                Math.randInt(vector.x - 1000, vector.x + 1000),
+                Math.randInt(vector.y - 1000, vector.y + 1000),
+                Math.randInt(vector.z - 1000, vector.z + 1000)
             );
             this.geometry.vertices.push(from);
             this.dest.push(to);

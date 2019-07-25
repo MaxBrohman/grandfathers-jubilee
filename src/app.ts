@@ -39,7 +39,7 @@ export default class App {
             if(markerRoot){
                 if(!this.isGalleryInitialized){
                     this.isGalleryInitialized = true;
-                    const module = await import(/* webpackChunkName: "gallery" */'./gallery'); 
+                    const module = await import('./gallery'); 
                     this.gallery = new module.default();
                     await this.gallery.init();
                     window.addEventListener('click', this.mouseEventHandler);
@@ -120,7 +120,7 @@ export default class App {
             this.gallery.animateScale(mesh);
             // if mesh is last, make fireworks!!
             if(meshes.indexOf(mesh) === meshes.length - 1){
-                const module = await import(/* webpackChunkName: "fireworks" */'./fireworks');
+                const module = await import('./fireworks');
                 const Fireworks = module.default;
                 this.fireworks = new Fireworks(this.scene!);
                 this.actions.push(this.fireworks.draw);

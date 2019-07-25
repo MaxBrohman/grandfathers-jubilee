@@ -1,11 +1,10 @@
+import { Clock, Mesh } from 'three';
 import { PMOptions } from './typings/photo-mesh';
 import PhotoMesh from './photo-mesh';
 
-declare const THREE: any;
-
 export default class PhotoGallery{
     private data: PMOptions[] | undefined;
-    public meshes: THREE.Mesh[] = [];
+    public meshes: Mesh[] = [];
     private meshCounter: number = 0;
     constructor(){}
 
@@ -21,13 +20,13 @@ export default class PhotoGallery{
     }
 
     // adds mesh to scene, animates and translate mesh from meshes property array to usedMeshes property array
-    public async render(): Promise<THREE.Mesh> {
+    public async render(): Promise<Mesh> {
         const mesh = this.meshes[this.meshCounter];
         this.meshCounter++;
         return mesh;
     }
 
-    public hide(mesh: THREE.Mesh): Promise<THREE.Mesh>{
+    public hide(mesh: Mesh): Promise<Mesh>{
         return new Promise((resolve) => {
             this.animateScale(mesh).then(() => {
                 resolve(mesh);
@@ -36,10 +35,10 @@ export default class PhotoGallery{
     }
 
     // animate scale depending on current mesh scale
-    public animateScale(mesh: THREE.Mesh): Promise<boolean>{
+    public animateScale(mesh: Mesh): Promise<boolean>{
         return new Promise((resolve) => {
 
-            let clock: THREE.Clock | null = new THREE.Clock();
+            let clock: Clock | null = new Clock();
             const duration = 0.8;
             const to = mesh.scale.x - 1;
             const from = -mesh.scale.x;
