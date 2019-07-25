@@ -1,6 +1,14 @@
+const path = require('path');
+
 module.exports = {
-    entry: './src/index.ts',
-    mode: 'development',
+    entry: {
+            index: './src/index.ts'
+        },
+    output: {
+            filename: '[name].bundle.js',
+            path: path.resolve(__dirname, 'dist')
+        },
+    mode: 'production',
     devtool: 'source-map',
     devServer: {
         contentBase: './dist'
@@ -13,11 +21,6 @@ module.exports = {
                 exclude: /node_modules/,
             }
         ]
-    },
-    optimization: {
-            splitChunks: {
-            chunks: 'all'
-        }
     },
     resolve: {
         extensions: [".ts", ".js"]
