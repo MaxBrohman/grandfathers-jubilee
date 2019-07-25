@@ -14,7 +14,7 @@ export default class PhotoGallery{
         this.data = module.data;
         this.data.forEach(img => {
             const newMesh = new PhotoMesh(img).init();
-            newMesh.scale.set(0, 0, 0);
+            newMesh.scale.set(0.000001, 0.000001, 0.000001);
             this.meshes.push(newMesh);
         });
     }
@@ -51,12 +51,12 @@ export default class PhotoGallery{
                     resolve(true);
                     clock = null;
                     const limit = Math.abs(to);
-                    mesh.scale.set(limit, limit, 0);
+                    mesh.scale.set(limit, limit, 0.000001);
                     return;
                 }
                 
                 const value = Math.abs(from + step);
-                mesh.scale.set(value, value, 0);
+                mesh.scale.set(value, value, 0.000001);
 
                 requestAnimationFrame(animate);
             };
