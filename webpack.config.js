@@ -14,6 +14,11 @@ module.exports = {
             }
         ]
     },
+    optimization: {
+            splitChunks: {
+            chunks: 'all'
+        }
+    },
     resolve: {
         extensions: [".tsx", ".ts", ".js"]
     }
