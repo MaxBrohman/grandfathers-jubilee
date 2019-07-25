@@ -13,7 +13,7 @@ export const data = [
             width: 2.64,
             height: 3.44
         },
-        scale: 1
+        scale: 1.5
     },
     {
         img: './images/офицер_004.jpg',
