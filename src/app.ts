@@ -35,6 +35,7 @@ export default class App {
         this.scene!.add(root);
         this.ar.controller!.addEventListener('getMarker', async (evt) => {
             const marker = evt.data.marker;
+            console.log(marker);
             const markerRoot = this.ar.controller!.threePatternMarkers[marker.idPatt];
             if(markerRoot){
                 if(!this.isGalleryInitialized){
