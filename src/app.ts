@@ -35,9 +35,10 @@ export default class App {
         this.scene!.add(root);
         this.ar.controller!.addEventListener('getMarker', async (evt) => {
             const marker = evt.data.marker;
-            const markerRoot = this.ar.controller!.threePatternMarkers[marker.idPatt];
+            // const markerRoot = this.ar.controller!.threePatternMarkers[marker.idPatt];
+            const markerRoot = this.ar.controller!.threeBarcodeMarkers[marker.idMatrix];
             if(markerRoot){
-                if(!this.isGalleryInitialized){
+                if(!this.isGalleryInitialized) {
                     this.isGalleryInitialized = true;
                     const module = await import(/* webpackChunkName: "gallery" */'./gallery'); 
                     this.gallery = new module.default();

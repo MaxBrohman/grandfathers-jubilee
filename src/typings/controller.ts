@@ -28,13 +28,23 @@ export interface IARController {
     transMatToGLMat: (transMat: Float64Array, glMat: Float64Array, scale?: number) => Float64Array;
     threePatternMarkers: IPatternMarkers | {};
     trackPatternMarkerId: (id: number, markerWidth?: number) => Group;
+    trackBarcodeMarkerId: (id: number, markerWidth?: number) => Group;
     addEventListener: (event: string, callback: (evt: any) => void) => void;
     process: (video: HTMLVideoElement) => void;
     canvas: HTMLCanvasElement;
+    setPatternDetectionMode: (detectionMode: number) => void;
+    threeBarcodeMarkers: IPatternMarkers | {};
+    setMatrixCodeType: (type: number) => void;
 }
 
 export interface IARCameraParams {
     new(src?: string, onload?: () => void, onerror?: () => void): IARCameraParams;
     load: (src: string) => void;
     onload: () => void;
+}
+
+export interface Iartoolkit {
+    AR_MATRIX_CODE_DETECTION: number;
+    AR_TEMPLATE_MATCHING_MONO_AND_MATRIX: number;
+    AR_MATRIX_CODE_3x3_HAMMING63: number;
 }
