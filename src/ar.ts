@@ -13,7 +13,7 @@ export default class Ar {
 	private videoParams: IVideoParams;
 	private cameraParams: IARCameraParams;
 	private readonly cameraUrl: string = './camera_para.dat';
-	private readonly patternUrl: string = './pattern-markers.patt';
+	private readonly patternUrl: string = './pattern-new-old-marker.patt';
 	private readonly barcodeId: number = 20;
     constructor(){
 		this.video = document.createElement('video');
@@ -39,7 +39,7 @@ export default class Ar {
 		return new Promise((resolve) => {
 			this.cameraParams.onload = () => {
 				this.controller = new ARController(this.width, this.height, this.cameraParams);
-				this.controller.setPatternDetectionMode(artoolkit.AR_MATRIX_CODE_DETECTION);
+				// this.controller.setPatternDetectionMode(artoolkit.AR_MATRIX_CODE_DETECTION);
 				// this.controller.setPatternDetectionMode(artoolkit.AR_TEMPLATE_MATCHING_MONO_AND_MATRIX);
 				// this.controller.setMatrixCodeType(artoolkit.AR_MATRIX_CODE_3x3_HAMMING63);
 				this.initVideoSource()
@@ -57,8 +57,8 @@ export default class Ar {
 	// basically decorator around setMarker method
 	public initMarker(root: THREE.Group): Promise<THREE.Group>{
 		return new Promise( async (resolve) => {
-			// const newRoot = await this.setMarker(this.patternUrl, root);
-			const newRoot = this.setBarcode(root);
+			const newRoot = await this.setMarker(this.patternUrl, root);
+			// const newRoot = this.setBarcode(root);
 			resolve(newRoot);
 		});
 	}

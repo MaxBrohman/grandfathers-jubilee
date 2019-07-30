@@ -35,8 +35,8 @@ export default class App {
         this.scene!.add(root);
         this.ar.controller!.addEventListener('getMarker', async (evt) => {
             const marker = evt.data.marker;
-            // const markerRoot = this.ar.controller!.threePatternMarkers[marker.idPatt];
-            const markerRoot = this.ar.controller!.threeBarcodeMarkers[marker.idMatrix];
+            const markerRoot = this.ar.controller!.threePatternMarkers[marker.idPatt];
+            // const markerRoot = this.ar.controller!.threeBarcodeMarkers[marker.idMatrix];
             if(markerRoot){
                 if(!this.isGalleryInitialized) {
                     this.isGalleryInitialized = true;
