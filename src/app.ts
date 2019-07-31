@@ -22,6 +22,7 @@ export default class App {
     public async init(): Promise<any> {
         this.video = await this.initAr();
         this.canvas = await this.initThree();
+        this.canvas.style.cursor = 'pointer';
         this.camera!.projectionMatrix.fromArray((this.ar.controller!.getCameraMatrix() as number[]));
         document.body.appendChild(this.canvas!);
         this.onResize();
