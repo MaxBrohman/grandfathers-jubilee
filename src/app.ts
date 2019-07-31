@@ -10,12 +10,12 @@ export default class App {
     public raycaster: THREE.Raycaster | undefined;
     public video: HTMLVideoElement | undefined;
     public canvas: HTMLCanvasElement | undefined;
-    private wrapper: any;
+    private wrapper: THREE.Group | undefined;
     private threeModule: any;
     private actions: Array<() => void> = [];
     private isGalleryInitialized: boolean = false;
     constructor(){
-        this.mouseEventHandler = this.mouseEventHandler.bind(this);
+        this.touchEventHandler = this.touchEventHandler.bind(this);
         this.update = this.update.bind(this);
     }
 
@@ -36,14 +36,13 @@ export default class App {
         this.ar.controller!.addEventListener('getMarker', async (evt) => {
             const marker = evt.data.marker;
             const markerRoot = this.ar.controller!.threePatternMarkers[marker.idPatt];
-            // const markerRoot = this.ar.controller!.threeBarcodeMarkers[marker.idMatrix];
             if(markerRoot){
                 if(!this.isGalleryInitialized) {
                     this.isGalleryInitialized = true;
                     const module = await import(/* webpackChunkName: "gallery" */'./gallery'); 
                     this.gallery = new module.default();
                     await this.gallery.init();
-                    window.addEventListener('click', this.mouseEventHandler);
+                    window.addEventListener('touchstart', this.touchEventHandler);
                     this.renderMesh();
                 }
                 const newMat = new this.threeModule.Matrix4().fromArray(evt.data.matrixGL_RH);
@@ -116,7 +115,7 @@ export default class App {
             if(position){
                 mesh.position.copy(position);
             }
-            this.wrapper.add(mesh);
+            this.wrapper!.add(mesh);
             const meshes = this.gallery.meshes;
             this.gallery.animateScale(mesh);
             // if mesh is last, make fireworks!!
@@ -132,7 +131,7 @@ export default class App {
      // animates and removes mesh from scene
      private async hideMesh(mesh: THREE.Mesh | THREE.Object3D): Promise<void>{
         const meshToHide = await this.gallery.hide(mesh);
-        this.wrapper.remove(meshToHide);
+        this.wrapper!.remove(meshToHide);
     }
 
     // dispathces all app actions for request animation frame
@@ -143,10 +142,10 @@ export default class App {
     }
 
     // click logic
-    public mouseEventHandler(evt: MouseEvent): void{
+    public touchEventHandler(evt: TouchEvent): void{
         const mouse = new this.threeModule.Vector2(
-            (evt.clientX / window.innerWidth) * 2 - 1,
-            -(evt.clientY / window.innerHeight) * 2 + 1
+            (evt.touches[0].clientX / window.innerWidth) * 2 - 1,
+            -(evt.touches[0].clientY / window.innerHeight) * 2 + 1
         );
         
         this.raycaster!.setFromCamera(mouse, this.camera!);

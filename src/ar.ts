@@ -1,9 +1,8 @@
-import { IVideoParams, IARController, IARCameraParams, Iartoolkit } from './typings/controller';
+import { IVideoParams, IARController, IARCameraParams } from './typings/controller';
 
 // new version of ARtoolkit doesnt exist as npm package fo now 
 declare const ARController: IARController;
 declare const ARCameraParam: IARCameraParams;
-declare const artoolkit: Iartoolkit;
 
 export default class Ar {
 	public video: HTMLVideoElement;
@@ -13,8 +12,7 @@ export default class Ar {
 	private videoParams: IVideoParams;
 	private cameraParams: IARCameraParams;
 	private readonly cameraUrl: string = './camera_para.dat';
-	private readonly patternUrl: string = './pattern-new-old-marker.patt';
-	private readonly barcodeId: number = 20;
+	private readonly patternUrl: string = './pattern-sgnsfgsfgn.patt';
     constructor(){
 		this.video = document.createElement('video');
 		this.cameraParams = new ARCameraParam();
@@ -39,9 +37,6 @@ export default class Ar {
 		return new Promise((resolve) => {
 			this.cameraParams.onload = () => {
 				this.controller = new ARController(this.width, this.height, this.cameraParams);
-				// this.controller.setPatternDetectionMode(artoolkit.AR_MATRIX_CODE_DETECTION);
-				// this.controller.setPatternDetectionMode(artoolkit.AR_TEMPLATE_MATCHING_MONO_AND_MATRIX);
-				// this.controller.setMatrixCodeType(artoolkit.AR_MATRIX_CODE_3x3_HAMMING63);
 				this.initVideoSource()
 				.then((video) => {
 					resolve((video as HTMLVideoElement));
@@ -58,7 +53,6 @@ export default class Ar {
 	public initMarker(root: THREE.Group): Promise<THREE.Group>{
 		return new Promise( async (resolve) => {
 			const newRoot = await this.setMarker(this.patternUrl, root);
-			// const newRoot = this.setBarcode(root);
 			resolve(newRoot);
 		});
 	}
@@ -119,15 +113,6 @@ export default class Ar {
 				resolve(markerRoot);
 			});
 		});
-	}
-
-	private setBarcode(root: THREE.Group): THREE.Group {
-		this.controller!.threeBarcodeMarkers = {};
-		(root as any).markerTracker = this.controller!.trackBarcodeMarkerId(this.barcodeId);
-		(root as any).markerMatrix = new Float64Array(12);
-		root.matrixAutoUpdate = false;
-		this.controller!.threeBarcodeMarkers[this.barcodeId] = root;
-		return root;
 	}
 
 	// gets stream from user camera
