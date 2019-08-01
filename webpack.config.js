@@ -6,12 +6,12 @@ module.exports = {
         },
     output: {
             filename: '[name].bundle.js',
-            path: path.resolve(__dirname, 'dist')
+            path: path.resolve(__dirname, 'docs')
         },
     mode: 'production',
     devtool: 'source-map',
     devServer: {
-        contentBase: './dist'
+        contentBase: './docs'
     },
     module: {
         rules: [
