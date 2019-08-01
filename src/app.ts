@@ -15,7 +15,7 @@ export default class App {
     private actions: Array<() => void> = [];
     private isGalleryInitialized: boolean = false;
     constructor(){
-        this.touchEventHandler = this.touchEventHandler.bind(this);
+        this.clickEventHandler = this.clickEventHandler.bind(this);
         this.update = this.update.bind(this);
     }
 
@@ -43,7 +43,7 @@ export default class App {
                     const module = await import(/* webpackChunkName: "gallery" */'./gallery'); 
                     this.gallery = new module.default();
                     await this.gallery.init();
-                    window.addEventListener('touchstart', this.touchEventHandler);
+                    window.addEventListener('click', this.clickEventHandler);
                     this.renderMesh();
                 }
                 const newMat = new this.threeModule.Matrix4().fromArray(evt.data.matrixGL_RH);
@@ -143,11 +143,11 @@ export default class App {
     }
 
     // click logic
-    public touchEventHandler(evt: TouchEvent): void{
+    public clickEventHandler(evt: MouseEvent): void{
         evt.preventDefault();
         const mouse = new this.threeModule.Vector2(
-            (evt.touches[0].clientX / window.innerWidth) * 2 - 1,
-            -(evt.touches[0].clientY / window.innerHeight) * 2 + 1
+            (evt.clientX / window.innerWidth) * 2 - 1,
+            -(evt.clientY / window.innerHeight) * 2 + 1
         );
         
         this.raycaster!.setFromCamera(mouse, this.camera!);
