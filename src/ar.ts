@@ -164,8 +164,7 @@ export default class Ar {
 	// sets necessary properties for scene root element
 	private createMarkerRoot(markerUid: number, root: THREE.Group): THREE.Group{
 		this.controller!.threePatternMarkers = {};
-		const markerWidth = 0.8;
-		(root as any).markerTracker = this.controller!.trackPatternMarkerId(markerUid, markerWidth);
+		(root as any).markerTracker = this.controller!.trackPatternMarkerId(markerUid);
 		(root as any).markerMatrix = new Float64Array(12);
 		root.matrixAutoUpdate = false;
 		this.controller!.threePatternMarkers[markerUid] = root;
