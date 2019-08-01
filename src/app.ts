@@ -67,7 +67,7 @@ export default class App {
     private onResize(): void {
         this.ar.onVideoResize();
         if(window.innerHeight > window.innerWidth){
-            // this.wrapper!.rotation.x = -(Math.PI * 0.25);
+            this.wrapper!.rotation.x = -(Math.PI * 0.25);
             this.wrapper!.scale.set(1, 1, 1);
         } else{
             this.wrapper!.rotation.x = 0;
@@ -144,6 +144,7 @@ export default class App {
 
     // click logic
     public touchEventHandler(evt: TouchEvent): void{
+        evt.preventDefault();
         const mouse = new this.threeModule.Vector2(
             (evt.touches[0].clientX / window.innerWidth) * 2 - 1,
             -(evt.touches[0].clientY / window.innerHeight) * 2 + 1
