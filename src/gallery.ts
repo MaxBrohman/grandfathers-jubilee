@@ -42,7 +42,7 @@ export default class PhotoGallery{
             const duration = 0.8;
             const to = mesh.scale.x - 1;
             const from = -mesh.scale.x;
-
+            const minAllowableScale = 0.000001;
             const animate = () => {
                 const animationTime = clock!.getElapsedTime();
                 const step = animationTime / duration;
@@ -51,12 +51,12 @@ export default class PhotoGallery{
                     resolve(true);
                     clock = null;
                     const limit = Math.abs(to);
-                    mesh.scale.set(limit, limit, 0.000001);
+                    mesh.scale.set(limit, limit, minAllowableScale);
                     return;
                 }
                 
                 const value = Math.abs(from + step);
-                mesh.scale.set(value, value, 0.000001);
+                mesh.scale.set(value, value, minAllowableScale);
 
                 requestAnimationFrame(animate);
             };
