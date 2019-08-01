@@ -67,7 +67,7 @@ export default class App {
     private onResize(): void {
         this.ar.onVideoResize();
         if(window.innerHeight > window.innerWidth){
-            this.wrapper!.rotation.x = -(Math.PI * 0.25);
+            // this.wrapper!.rotation.x = -(Math.PI * 0.25);
             this.wrapper!.scale.set(1, 1, 1);
         } else{
             this.wrapper!.rotation.x = 0;
